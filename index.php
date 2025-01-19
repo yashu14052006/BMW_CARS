@@ -18,7 +18,7 @@ mysqli_select_db($conn, 'bmw_car');
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <style>
-        /* Full-screen video background */
+        
         #home {
             position: relative;
             width: 100%;
