@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         $transmission = $_POST["transmission"];
     }
-
+   
     if (empty($_POST["price"])) {
         $priceErr = "Price is required";
     } else {
