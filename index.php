@@ -36,7 +36,7 @@ mysqli_select_db($conn, 'bmw_car');
             z-index: -1;
         }
 
-        /* Text styling */
+        
         #home .container {
             position: absolute;
             top: 50%;
