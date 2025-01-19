@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         $transmission = $_POST["transmission"];
     }
-   
+
     if (empty($_POST["price"])) {
         $priceErr = "Price is required";
     } else {
@@ -342,6 +342,8 @@ if ($result->num_rows > 0) {
             <div class="error"><?php echo $generalErr; ?></div>
         </form>
     </div>
+
+    
 </body>
 </html>
 

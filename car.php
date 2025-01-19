@@ -1,64 +1,317 @@
-CREATE DATABASE car_showroom;
 
-USE car_showroom;
-
-CREATE TABLE categories (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL
-);
-
-CREATE TABLE cars (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    category_id INT,
-    name VARCHAR(100) NOT NULL,
-    image_path VARCHAR(255) NOT NULL,
-    description TEXT,
-    FOREIGN KEY (category_id) REFERENCES categories(id)
-);
-
-INSERT INTO cars (category_id, name, image_path, description) VALUES
-(6, 'BMW 2 GRAN COUPE', 'images/BMW 2 GRAN COUPE.png', 'A luxurious compact Gran Coupe.'),
-(6, 'BMW 2 Series', 'images/BMW 2 Series.png', 'The versatile BMW 2 Series.'),
-(7, 'BMW 3 GRAN LIMOUSINE', 'images/BMW 3 GRAN LIMOUSINE.png', 'The extended luxury of the BMW 3 Series.'),
-(5, 'BMW 5 LONG WHEELBASE', 'images/BMW 5 LONG WHEELBASE.png', 'An extended version of the BMW 5 Series.'),
-(4, 'BMW 7 PROTECTION', 'images/BMW 7 PROTECTION.png', 'An armored luxury sedan.'),
-(4, 'BMW 7 SEDAN', 'images/BMW 7 SEDAN.png', 'The iconic BMW 7 Series Sedan.'),
-(7, 'BMW 320', 'images/BMW 320.png', 'The classic BMW 320.'),
-(7, 'BMW 340i', 'images/BMW 340i.png', 'A high-performance variant of the 3 Series.'),
-(1, 'BMW i5', 'images/BMW i5.png', 'An innovative electric sedan.'),
-(1, 'BMW i7', 'images/BMW i7.png', 'The luxury electric BMW i7.'),
-(2, 'BMW iX', 'images/BMW iX.png', 'The future of SUVs with BMW iX.'),
-(2, 'BMW ix1', 'images/BMW ix1.png', 'A compact electric SUV.'),
-(3, 'BMW M2', 'images/BMW M2.png', 'A high-performance sports car.'),
-(3, 'BMW M8', 'images/BMW M8.png', 'The ultimate BMW M sports car.'),
-(3, 'BMW M40i', 'images/BMW M40i.png', 'An M performance luxury car.'),
-(2, 'BMW X1', 'images/BMW X1.png', 'A versatile compact SUV.'),
-(2, 'BMW X3', 'images/BMW X3.png', 'A luxurious and powerful SUV.'),
-(2, 'BMW X5', 'images/BMW X5.png', 'The perfect balance of luxury and performance.'),
-(2, 'BMW X7', 'images/BMW X7.png', 'A large and luxurious BMW SUV.'),
-(8, 'BMW Z4 M40i', 'images/BMW Z4 M40i.png', 'A stylish and dynamic roadster.');
+<?php
+// Include the database connection file
+include('./db_connect.php'); // Ensure this path is correct
 
 
+// Initialize variables
+$carId = $carName = $year = $kilometers = $fuelType = $transmission = $price = $exteriorColor = $imagePath = $registrationYear = $groundClearance = $bootSpace = $torque = $power = $engineCapacity = $ownershipStatus = "";
+$carNameErr = $yearErr = $kilometersErr = $fuelTypeErr = $transmissionErr = $priceErr = $exteriorColorErr = $imageErr = $registrationYearErr = $groundClearanceErr = $bootSpaceErr = $torqueErr = $powerErr = $engineCapacityErr = $ownershipStatusErr = $generalErr = "";
 
+// Fetch car details if carId is provided
+if (isset($_GET['car_id']) && !empty($_GET['car_id'])) {
+    $carId = intval($_GET['car_id']);
+    $sql = "SELECT * FROM car_information WHERE id=?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $carId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result->num_rows > 0) {
+        $car = $result->fetch_assoc();
+        $carName = $car['name'];
+        $year = $car['year'];
+        $kilometers = $car['kilometers_done'];
+        $fuelType = $car['fuel'];
+        $transmission = $car['transmission'];
+        $price = $car['price'];
+        $exteriorColor = $car['exterior_color'];
+        $registrationYear = $car['registration_year'];
+        $groundClearance = $car['ground_clearance'];
+        $bootSpace = $car['boot_space'];
+        $torque = $car['torque'];
+        $power = $car['power'];
+        $engineCapacity = $car['engine_capacity'];
+        $ownershipStatus = $car['ownership_status'];
+    } else {
+        $generalErr = "No car found with the given ID.";
+    }
+    $stmt->close();
+} else {
+    $generalErr = "Invalid or missing car ID.";
+}
 
-CREATE TABLE car_information (
-    id INT AUTO_INCREMENT PRIMARY KEY,         -- Unique ID for each car
-    name VARCHAR(255) NOT NULL,                -- Car name (e.g., MERCEDES BENZ CLA 200 SPORTS)
-    price DECIMAL(10, 2) NOT NULL,             -- Car price (e.g., 2750000.00)
-    image VARCHAR(255) NOT NULL,               -- Image path or URL
-    manufacturing_year YEAR NOT NULL,          -- Manufacturing year (e.g., 2019)
-    kilometers_done VARCHAR(50) NOT NULL,      -- Kilometers driven (e.g., 22000 KM)
-    transmission VARCHAR(50) NOT NULL,         -- Transmission type (e.g., Automatic)
-    fuel VARCHAR(50) NOT NULL,                 -- Fuel type (e.g., Petrol)
-    registration_year YEAR NOT NULL,           -- Registration year (e.g., 2019)
-    exterior_color VARCHAR(50) NOT NULL,       -- Car color (e.g., White)
-    ground_clearance VARCHAR(50) NOT NULL,     -- Ground clearance (e.g., 160mm)
-    boot_space VARCHAR(50) NOT NULL,           -- Boot space (e.g., 470ltr)
-    torque VARCHAR(50) NOT NULL,               -- Torque (e.g., 300NM)
-    variant VARCHAR(255) NOT NULL,             -- Car variant (e.g., CLA 200 Sports)
-    power VARCHAR(50) NOT NULL,                -- Engine power (e.g., 181 BHP)
-    engine_capacity VARCHAR(50) NOT NULL,      -- Engine capacity (e.g., 2.0 LTRs)
-    ownership_status VARCHAR(50) NOT NULL,     -- Ownership status (e.g., First)
-    registered_state VARCHAR(50) NOT NULL,     -- State of registration (e.g., MH)
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Timestamp for record creation
-);
+// Handle form submission for updating car
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Validate inputs
+    if (empty($_POST["car_name"])) {
+        $carNameErr = "Car name is required";
+    } else {
+        $carName = $_POST["car_name"];
+    }
+
+    if (empty($_POST["year"])) {
+        $yearErr = "Year is required";
+    } else {
+        $year = $_POST["year"];
+    }
+
+    if (empty($_POST["kilometers"])) {
+        $kilometersErr = "Kilometers driven is required";
+    } else {
+        $kilometers = $_POST["kilometers"];
+    }
+
+    if (empty($_POST["fuel_type"])) {
+        $fuelTypeErr = "Fuel type is required";
+    } else {
+        $fuelType = $_POST["fuel_type"];
+    }
+
+    if (empty($_POST["transmission"])) {
+        $transmissionErr = "Transmission is required";
+    } else {
+        $transmission = $_POST["transmission"];
+    }
+
+    if (empty($_POST["price"])) {
+        $priceErr = "Price is required";
+    } else {
+        $price = $_POST["price"];
+    }
+
+    if (empty($_POST["exterior_color"])) {
+        $exteriorColorErr = "Exterior color is required";
+    } else {
+        $exteriorColor = $_POST["exterior_color"];
+    }
+
+    if (empty($_POST["registration_year"])) {
+        $registrationYearErr = "Registration year is required";
+    } else {
+        $registrationYear = $_POST["registration_year"];
+    }
+
+    if (empty($_POST["ground_clearance"])) {
+        $groundClearanceErr = "Ground clearance is required";
+    } else {
+        $groundClearance = $_POST["ground_clearance"];
+    }
+
+    if (empty($_POST["boot_space"])) {
+        $bootSpaceErr = "Boot space is required";
+    } else {
+        $bootSpace = $_POST["boot_space"];
+    }
+
+    if (empty($_POST["torque"])) {
+        $torqueErr = "Torque is required";
+    } else {
+        $torque = $_POST["torque"];
+    }
+
+    if (empty($_POST["power"])) {
+        $powerErr = "Power is required";
+    } else {
+        $power = $_POST["power"];
+    }
+
+    if (empty($_POST["engine_capacity"])) {
+        $engineCapacityErr = "Engine capacity is required";
+    } else {
+        $engineCapacity = $_POST["engine_capacity"];
+    }
+
+    if (empty($_POST["ownership_status"])) {
+        $ownershipStatusErr = "Ownership status is required";
+    } else {
+        $ownershipStatus = $_POST["ownership_status"];
+    }
+
+    // Handle image upload
+    if (isset($_FILES["image"]) && $_FILES["image"]["error"] == 0) {
+        $targetDir = "../assets/car-info/";
+        if (!is_dir($targetDir)) {
+            mkdir($targetDir, 0777, true);
+        }
+        $targetFile = $targetDir . basename($_FILES["image"]["name"]);
+        move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile);
+        $imagePath = "" . basename($_FILES["image"]["name"]);
+    }
+
+    // If no errors, update the car in the database
+    if (empty($carNameErr) && empty($yearErr) && empty($kilometersErr) && empty($fuelTypeErr) && empty($transmissionErr) && empty($priceErr) && empty($exteriorColorErr) && empty($imageErr) && empty($registrationYearErr) && empty($groundClearanceErr) && empty($bootSpaceErr) && empty($torqueErr) && empty($powerErr) && empty($engineCapacityErr) && empty($ownershipStatusErr)) {
+        $sql = "UPDATE car_information SET name=?, kilometers_done=?, fuel=?, transmission=?, price=?, exterior_color=?, image=?, registration_year=?, ground_clearance=?, boot_space=?, torque=?, power=?, engine_capacity=?, ownership_status=? WHERE id=?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssssssssssssssi", $carName, $kilometers, $fuelType, $transmission, $price, $exteriorColor, $imagePath, $registrationYear, $groundClearance, $bootSpace, $torque, $power, $engineCapacity, $ownershipStatus, $carId);
+
+        if ($stmt->execute()) {
+            header("Location: index.php");
+            exit();
+        } else {
+            $generalErr = "Error: " . $stmt->error;
+        }
+        $stmt->close();
+    }
+}
+// Fetch all car_information for the dropdown
+$car_information = [];
+$sql = "SELECT * FROM cars";
+$result = $conn->query($sql);
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $car_information[] = $row;
+    }
+}
+
+// Close the connection after use
+$conn->close();
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Car</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .form-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .form-container h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .form-group .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Edit Car</h2>
+        <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) . '?car_id=' . $carId; ?>" enctype="multipart/form-data">
+        <div class="form-group">
+                <label for="car_id">Select Car to Update</label>
+                <select id="car_id" name="car_id" onchange="populateForm(this.value)">
+                    <option value="">Select Car</option>
+                    <?php foreach ($car_information as $car) { ?>
+                        <option value="<?php echo htmlspecialchars($car['id']); ?>"><?php echo htmlspecialchars($car['name']); ?></option>
+                    <?php } ?>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="year">Year</label>
+                <input type="text" id="year" name="year" value="<?php echo htmlspecialchars($year); ?>">
+                <div class="error"><?php echo $yearErr; ?></div>
+            </div>
+            <div class="form-group">
+                <label for="kilometers">Kilometers Driven</label>
+                <input type="text" id="kilometers" name="kilometers" value="<?php echo htmlspecialchars($kilometers); ?>">
+                <div class="error"><?php echo $kilometersErr; ?></div>
+            </div>
+            <div class="form-group">
+                <label for="fuel_type">Fuel Type</label>
+                <input type="text" id="fuel_type" name="fuel_type" value="<?php echo htmlspecialchars($fuelType); ?>">
+                <div class="error"><?php echo $fuelTypeErr; ?></div>
+            </div>
+            <div class="form-group">
+                <label for="transmission">Transmission</label>
+                <input type="text" id="transmission" name="transmission" value="<?php echo htmlspecialchars($transmission); ?>">
+                <div class="error"><?php echo $transmissionErr; ?></div>
+            </div>
+            <div class="form-group">
+                <label for="price">Price</label>
+                <input type="text" id="price" name="price" value="<?php echo htmlspecialchars($price); ?>">
+                <div class="error"><?php echo $priceErr; ?></div>
+            </div>
+            <div class="form-group">
+                <label for="exterior_color">Exterior Color</label>
+                <input type="text" id="exterior_color" name="exterior_color" value="<?php echo htmlspecialchars($exteriorColor); ?>">
+                <div class="error"><?php echo $exteriorColorErr; ?></div>
+            </div>
+            <div class="form-group">
+                <label for="registration_year">Registration Year</label>
+                <input type="text" id="registration_year" name="registration_year" value="<?php echo htmlspecialchars($registrationYear); ?>">
+                <div class="error"><?php echo $registrationYearErr; ?></div>
+            </div>
+            <div class="form-group">
+                <label for="ground_clearance">Ground Clearance</label>
+                <input type="text" id="ground_clearance" name="ground_clearance" value="<?php echo htmlspecialchars($groundClearance); ?>">
+                <div class="error"><?php echo $groundClearanceErr; ?></div>
+            </div>
+            <div class="form-group">
+                <label for="boot_space">Boot Space</label>
+                <input type="text" id="boot_space" name="boot_space" value="<?php echo htmlspecialchars($bootSpace); ?>">
+                <div class="error"><?php echo $bootSpaceErr; ?></div>
+            </div>
+            <div class="form-group">
+                <label for="torque">Torque</label>
+                <input type="text" id="torque" name="torque" value="<?php echo htmlspecialchars($torque); ?>">
+                <div class="error"><?php echo $torqueErr; ?></div>
+            </div>
+            <div class="form-group">
+                <label for="power">Power</label>
+                <input type="text" id="power" name="power" value="<?php echo htmlspecialchars($power); ?>">
+                <div class="error"><?php echo $powerErr; ?></div>
+            </div>
+            <div class="form-group">
+                <label for="engine_capacity">Engine Capacity</label>
+                <input type="text" id="engine_capacity" name="engine_capacity" value="<?php echo htmlspecialchars($engineCapacity); ?>">
+                <div class="error"><?php echo $engineCapacityErr; ?></div>
+            </div>
+            <div class="form-group">
+                <label for="ownership_status">Ownership Status</label>
+                <input type="text" id="ownership_status" name="ownership_status" value="<?php echo htmlspecialchars($ownershipStatus); ?>">
+                <div class="error"><?php echo $ownershipStatusErr; ?></div>
+            </div>
+            <div class="form-group">
+                <label for="image">Image</label>
+                <input type="file" id="image" name="image">
+                <div class="error"><?php echo $imageErr; ?></div>
+            </div>
+            <button type="submit">Save Car</button>
+            <div class="error"><?php echo $generalErr; ?></div>
+        </form>
+    </div>
+</body>
+</html>
