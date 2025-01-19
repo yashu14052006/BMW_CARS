@@ -144,7 +144,7 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
 
 // Fetch all car_information for the dropdown
 $car_information = [];
-$sql = "SELECT * FROM car_information";
+$sql = "SELECT * FROM cars";
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
@@ -211,6 +211,44 @@ if ($result->num_rows > 0) {
             background-color: #0056b3;
         }
     </style>
+    <script>
+        var carInformation = <?php echo json_encode($car_information); ?>;
+
+        function populateForm(carId) {
+            var car = carInformation.find(car => car.id == carId);
+            if (car) {
+                document.getElementById('car_name').value = car.name;
+                document.getElementById('year').value = car.year;
+                document.getElementById('kilometers').value = car.kilometers_done;
+                document.getElementById('fuel_type').value = car.fuel;
+                document.getElementById('transmission').value = car.transmission;
+                document.getElementById('price').value = car.price;
+                document.getElementById('exterior_color').value = car.exterior_color;
+                document.getElementById('registration_year').value = car.registration_year;
+                document.getElementById('ground_clearance').value = car.ground_clearance;
+                document.getElementById('boot_space').value = car.boot_space;
+                document.getElementById('torque').value = car.torque;
+                document.getElementById('power').value = car.power;
+                document.getElementById('engine_capacity').value = car.engine_capacity;
+                document.getElementById('ownership_status').value = car.ownership_status;
+            } else {
+                document.getElementById('car_name').value = '';
+                document.getElementById('year').value = '';
+                document.getElementById('kilometers').value = '';
+                document.getElementById('fuel_type').value = '';
+                document.getElementById('transmission').value = '';
+                document.getElementById('price').value = '';
+                document.getElementById('exterior_color').value = '';
+                document.getElementById('registration_year').value = '';
+                document.getElementById('ground_clearance').value = '';
+                document.getElementById('boot_space').value = '';
+                document.getElementById('torque').value = '';
+                document.getElementById('power').value = '';
+                document.getElementById('engine_capacity').value = '';
+                document.getElementById('ownership_status').value = '';
+            }
+        }
+    </script>
 </head>
 <body>
     <div class="form-container">
@@ -304,8 +342,6 @@ if ($result->num_rows > 0) {
             <div class="error"><?php echo $generalErr; ?></div>
         </form>
     </div>
-
-    
 </body>
 </html>
 

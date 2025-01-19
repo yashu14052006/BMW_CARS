@@ -165,47 +165,47 @@ $stmt->close();
         </div>
         <div class="feature">
             <i class="fas fa-road"></i>
-            <p>Kilometers Done: <?php echo htmlspecialchars($car['kilometers_done']); ?></p>
+            <p>Kilometers Done: <?php echo isset($car['kilometers_done']) ? htmlspecialchars($car['kilometers_done']) : 'Not Available'; ?></p>
         </div>
         <div class="feature">
             <i class="fas fa-cogs"></i>
-            <p>Transmission: <?php echo htmlspecialchars($car['transmission']); ?></p>
+            <p>Transmission: <?php echo isset($car['transmission']) ? htmlspecialchars($car['transmission']) : 'Not Available'; ?></p>
         </div>
         <div class="feature">
             <i class="fas fa-gas-pump"></i>
-            <p>Fuel Type: <?php echo htmlspecialchars($car['fuel']); ?></p>
+            <p>Fuel Type: <?php echo isset($car['fuel']) ? htmlspecialchars($car['fuel']) : 'Not Available'; ?></p>
         </div>
         <div class="feature">
             <i class="fas fa-calendar-check"></i>
-            <p>Registration Year: <?php echo htmlspecialchars($car['registration_year']); ?></p>
+            <p>Registration Year: <?php echo isset($car['registration_year']) ? htmlspecialchars($car['registration_year']) : 'Not Available'; ?></p>
         </div>
         <div class="feature">
             <i class="fas fa-palette"></i>
-            <p>Exterior Color: <?php echo htmlspecialchars($car['exterior_color']); ?></p>
+            <p>Exterior Color: <?php echo isset($car['exterior_color']) ? htmlspecialchars($car['exterior_color']) : 'Not Available'; ?></p>
         </div>
         <div class="feature">
             <i class="fas fa-arrows-alt-v"></i>
-            <p>Ground Clearance: <?php echo htmlspecialchars($car['ground_clearance']); ?></p>
+            <p>Ground Clearance: <?php echo isset($car['ground_clearance']) ? htmlspecialchars($car['ground_clearance']) : 'Not Available'; ?></p>
         </div>
         <div class="feature">
             <i class="fas fa-box"></i>
-            <p>Boot Space: <?php echo htmlspecialchars($car['boot_space']); ?></p>
+            <p>Boot Space: <?php echo isset($car['boot_space']) ? htmlspecialchars($car['boot_space']) : 'Not Available'; ?></p>
         </div>
         <div class="feature">
             <i class="fas fa-tachometer-alt"></i>
-            <p>Torque: <?php echo htmlspecialchars($car['torque']); ?></p>
+            <p>Torque: <?php echo isset($car['torque']) ? htmlspecialchars($car['torque']) : 'Not Available'; ?></p>
         </div>
         <div class="feature">
             <i class="fas fa-bolt"></i>
-            <p>Power: <?php echo htmlspecialchars($car['power']); ?></p>
+            <p>Power: <?php echo isset($car['power']) ? htmlspecialchars($car['power']) : 'Not Available'; ?></p>
         </div>
         <div class="feature">
             <i class="fas fa-car"></i>
-            <p>Engine Capacity: <?php echo htmlspecialchars($car['engine_capacity']); ?></p>
+            <p>Engine Capacity: <?php echo isset($car['engine_capacity']) ? htmlspecialchars($car['engine_capacity']) : 'Not Available'; ?></p>
         </div>
         <div class="feature">
             <i class="fas fa-user"></i>
-            <p>Ownership Status: <?php echo htmlspecialchars($car['ownership_status']); ?></p>
+            <p>Ownership Status: <?php echo isset($car['ownership_status']) ? htmlspecialchars($car['ownership_status']) : 'Not Available'; ?></p>
         </div>
     </div>
 </body>
