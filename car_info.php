@@ -24,12 +24,12 @@ $stmt->close();
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: transparent;
             margin: 0;
             padding: 0;
         }
         .header {
-            background-color: #333;
+            background-color: transparent;
             color: #fff;
             padding: 10px 20px;
             display: flex;
@@ -44,11 +44,10 @@ $stmt->close();
             display: flex;
             flex-wrap: wrap;
             padding: 20px;
-            background-color: #fff;
+            background-color: transparent;
             margin: 20px;
             margin-top: 10vh;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
         .main-content img {
             width: 100%;
@@ -70,9 +69,8 @@ $stmt->close();
         .booking-form {
             flex: 1;
             padding: 20px;
-            background-color: #f9f9f9;
+            background-color: transparent;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
         .booking-form h3 {
             margin-bottom: 20px;
@@ -101,10 +99,9 @@ $stmt->close();
         .feature {
             flex: 1 1 30%;
             padding: 10px;
-            background-color: #fff;
+            background-color: transparent;
             margin: 10px;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
         .feature i {
@@ -114,7 +111,7 @@ $stmt->close();
         .footer {
             text-align: center;
             padding: 20px;
-            background-color: #333;
+            background-color: transparent;
             color: #fff;
         }
     </style>
