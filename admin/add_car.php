@@ -2,41 +2,46 @@
 // Include the database connection file
 include('../db_connect.php');
 
-// Initialize variables
+// Initialize variables for form data and error messages
 $carName = $description = $category = $imagePath = "";
 $carNameErr = $descriptionErr = $categoryErr = $imageErr = $generalErr = "";
 
-// Process form submission
+// Process form submission when the form is submitted via POST method
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Retrieve and sanitize form input
     $carName = $_POST["car_name"];
     $description = $_POST["description"];
     $category = intval($_POST["category"]);
 
-    // Handle image upload
+    // Handle image upload if an image is provided and there are no errors
     if (isset($_FILES["image"]) && $_FILES["image"]["error"] == 0) {
         $targetDir = "../assets/images/";
+        // Create the target directory if it doesn't exist
         if (!is_dir($targetDir)) {
             mkdir($targetDir, 0777, true);
         }
         $targetFile = $targetDir . basename($_FILES["image"]["name"]);
+        // Move the uploaded file to the target directory
         move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile);
         $imagePath = "" . basename($_FILES["image"]["name"]);
     }
 
-    // Insert into database
+    // Prepare and execute the SQL statement to insert the new car into the database
     $sql = "INSERT INTO cars (category_id, name, images, description) VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("isss", $category, $carName, $imagePath, $description);
     if ($stmt->execute()) {
+        // Redirect to the same page with a success message
         header("Location: add_car.php?success=1");
         exit();
     } else {
+        // Set the general error message if the query fails
         $generalErr = "Error: " . $stmt->error;
     }
     $stmt->close();
 }
 
-// Fetch categories from the database
+// Fetch categories from the database to populate the category dropdown
 $categories = [];
 $sql = "SELECT id, name FROM categories";
 $result = $conn->query($sql);
@@ -46,7 +51,7 @@ if ($result->num_rows > 0) {
     }
 }
 
-// Close the connection after use
+// Close the database connection after use
 $conn->close();
 ?>
 

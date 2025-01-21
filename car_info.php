@@ -2,15 +2,15 @@
 // Include the database connection file
 include('db_connect.php');
 
-// Fetch car details based on the provided car ID
-$carId = isset($_GET['id']) ? intval($_GET['id']) : 0;
-$sql = "SELECT * FROM car_information WHERE id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $carId);
-$stmt->execute();
-$result = $stmt->get_result();
-$car = $result->fetch_assoc();
-$stmt->close();
+// Fetch car details based on the provided car ID from the URL query parameter
+$carId = isset($_GET['id']) ? intval($_GET['id']) : 0; // Get the car ID from the URL, default to 0 if not set
+$sql = "SELECT * FROM car_information WHERE id = ?"; // SQL query to fetch car details
+$stmt = $conn->prepare($sql); // Prepare the SQL statement
+$stmt->bind_param("i", $carId); // Bind the car ID parameter to the SQL query
+$stmt->execute(); // Execute the SQL query
+$result = $stmt->get_result(); // Get the result set from the executed query
+$car = $result->fetch_assoc(); // Fetch the car details as an associative array
+$stmt->close(); // Close the prepared statement
 ?>
 
 <!DOCTYPE html>
@@ -22,6 +22,7 @@ $stmt->close();
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
+        /* Basic styling for the page */
         body {
             font-family: Arial, sans-serif;
             background-color: transparent;
@@ -123,13 +124,13 @@ $stmt->close();
     ?>
 
     <div class="main-content">
-        <?php if ($car): ?>
+        <?php if ($car): // Check if car details are available ?>
         <img src="./assets/car-info/<?php echo htmlspecialchars($car['image']); ?>" alt="<?php echo htmlspecialchars($car['name']); ?>">
         <div class="car-details">
             <h2><?php echo htmlspecialchars($car['name']); ?></h2>
             <p>Price: ₹<?php echo number_format($car['price'], 2); ?> (Included All Taxes)</p>
         </div>
-        <?php else: ?>
+        <?php else: // If car details are not available ?>
         <div class="car-details">
             <h2>Car not found</h2>
             <p>Price: ₹0.00 (Included All Taxes)</p>
@@ -138,24 +139,25 @@ $stmt->close();
         <div class="booking-form">
             <h3>Request for Booking</h3>
             <form action="booking.php" method="post">
-                <input type="hidden" name="car_id" value="<?php echo htmlspecialchars($car['id']); ?>">
-                <input type="text" name="name" placeholder="Name" required>
-                <input type="text" name="mobile" placeholder="Mobile" required>
-                <select name="state" required>
+                <input type="hidden" name="car_id" value="<?php echo htmlspecialchars($car['id']); ?>"> <!-- Hidden field to pass car ID -->
+                <input type="text" name="name" placeholder="Name" required> <!-- Input field for name -->
+                <input type="text" name="mobile" placeholder="Mobile" required> <!-- Input field for mobile number -->
+                <select name="state" required> <!-- Dropdown for selecting state -->
                     <option value="">Select State</option>
                     <!-- Add state options here -->
                 </select>
-                <select name="city" required>
+                <select name="city" required> <!-- Dropdown for selecting city -->
                     <option value="">Select City</option>
                     <!-- Add city options here -->
                 </select>
-                <textarea name="query" placeholder="Query" required></textarea>
-                <button type="submit">Request for Booking</button>
+                <textarea name="query" placeholder="Query" required></textarea> <!-- Textarea for additional queries -->
+                <button type="submit">Request for Booking</button> <!-- Submit button for the form -->
             </form>
         </div>
     </div>
 
     <div class="features">
+        <!-- Display various car features -->
         <div class="feature">
             <i class="fas fa-calendar-alt"></i>
             <p>Manufacturing Year: Not Available</p>
@@ -209,6 +211,6 @@ $stmt->close();
 </html>
 
 <?php
-// Close the connection after use
+// Close the database connection after use
 $conn->close();
 ?>

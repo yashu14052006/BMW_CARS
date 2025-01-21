@@ -1,47 +1,60 @@
 <?php
+/**
+ * 
+ * This script handles the login functionality for the BMW_CARS application.
+ * It includes the database connection, processes form submissions, validates user inputs,
+ * checks user credentials, and redirects to the dashboard upon successful login.
+ */
+
 // Include the database connection file
 include('db_connect.php');
 
-// Initialize variables
+// Initialize variables for storing user inputs and error messages
 $email = $password = "";
 $emailErr = $passwordErr = $generalErr = "";
 
-// Process form submission
+// Process form submission when the request method is POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Validate inputs
+    // Validate email input
     if (empty($_POST["email"])) {
-        $emailErr = "Email is required";
+        $emailErr = "Email is required"; // Set error message if email is empty
     } else {
-        $email = $_POST["email"];
+        $email = $_POST["email"]; // Sanitize and store email input
     }
 
+    // Validate password input
     if (empty($_POST["password"])) {
-        $passwordErr = "Password is required";
+        $passwordErr = "Password is required"; // Set error message if password is empty
     } else {
-        $password = $_POST["password"];
+        $password = $_POST["password"]; // Sanitize and store password input
     }
 
-    // If no errors, check credentials
+    // If no validation errors, proceed to check user credentials
     if (empty($emailErr) && empty($passwordErr)) {
+        // Prepare SQL statement to select user by email
         $sql = "SELECT id, password FROM users WHERE email = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $stmt->store_result();
+        $stmt->bind_param("s", $email); // Bind email parameter to the SQL statement
+        $stmt->execute(); // Execute the SQL statement
+        $stmt->store_result(); // Store the result of the query
+
+        // Check if a user with the provided email exists
         if ($stmt->num_rows > 0) {
-            $stmt->bind_result($id, $hashedPassword);
-            $stmt->fetch();
+            $stmt->bind_result($id, $hashedPassword); // Bind result variables
+            $stmt->fetch(); // Fetch the result
+
+            // Verify the provided password against the stored hashed password
             if (password_verify($password, $hashedPassword)) {
-                // Credentials are valid, redirect to dashboard
+                // If credentials are valid, redirect to the dashboard
                 header("Location: index.php");
                 exit();
             } else {
-                $generalErr = "Invalid email or password";
+                $generalErr = "Invalid email or password"; // Set error message for invalid credentials
             }
         } else {
-            $generalErr = "Invalid email or password";
+            $generalErr = "Invalid email or password"; // Set error message if no user found
         }
-        $stmt->close();
+        $stmt->close(); // Close the statement
     }
 }
 ?>
@@ -53,6 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <style>
+        /* Basic styling for the login page */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;

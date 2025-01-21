@@ -1,6 +1,28 @@
 <?php
 session_start();
+include('db_connect.php'); // Include your database connection file
+
+// Example credentials (In practice, these should come from your database)
+$storedUsername = 'admin';
+$storedPasswordHash = '$2y$10$kMkhr9UtGv3HzqxQ6KnRIi06Wr8szDd1cdeY96orYdx9lhIt9cVHS'; // This is '123456789' hashed
+
+// Process form submission
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+
+    // Check if the username and password match
+    if ($username === $storedUsername && password_verify($password, $storedPasswordHash)) {
+        // Start session and store username
+        $_SESSION['username'] = $username;
+        header("Location: dashboard.php");
+        exit();
+    } else {
+        $errorMessage = "Invalid username or password.";
+    }
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -55,15 +77,8 @@ session_start();
     <div class="login-container">
         <h2>Login</h2>
         <?php
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            $username = $_POST['username'];
-            $password = $_POST['password'];
-            if ($username == 'admin' && $password == '123456789') {
-                header("Location: dashboard.php");
-                exit();
-            } else {
-                echo "<p class='error'>Invalid username or password</p>";
-            }
+        if (isset($errorMessage)) {
+            echo "<p class='error'>$errorMessage</p>";
         }
         ?>
         <form method="post" action="">

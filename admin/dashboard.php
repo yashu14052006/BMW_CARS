@@ -2,9 +2,12 @@
 // Include the database connection file
 include('../db_connect.php');
 
-// Fetch summary data
+// Fetch summary data for the dashboard
+// Get the total number of cars from the 'cars' table
 $totalCars = $conn->query("SELECT COUNT(*) AS total FROM cars")->fetch_assoc()['total'];
+// Get the total number of categories from the 'categories' table
 $totalCategories = $conn->query("SELECT COUNT(*) AS total FROM categories")->fetch_assoc()['total'];
+// Fetch the latest 5 cars with their name and image path from the 'cars' table
 $recentCars = $conn->query("SELECT name, image_path FROM cars ORDER BY id DESC LIMIT 5")->fetch_all(MYSQLI_ASSOC);
 ?>
 
@@ -21,6 +24,7 @@ $recentCars = $conn->query("SELECT name, image_path FROM cars ORDER BY id DESC L
             margin: 0;
             padding: 0;
         }
+        /* Navbar styling */
         .navbar {
             background-color: #333;
             color: #fff;
@@ -38,12 +42,17 @@ $recentCars = $conn->query("SELECT name, image_path FROM cars ORDER BY id DESC L
             text-decoration: underline;
         }
         
+        /* Main container styling */
         .container {
             padding: 20px;
         }
+
+        /* Welcome section */
         .welcome {
             margin-bottom: 20px;
         }
+
+        /* Summary section with total cars and categories */
         .summary {
             display: flex;
             justify-content: space-between;
@@ -57,6 +66,8 @@ $recentCars = $conn->query("SELECT name, image_path FROM cars ORDER BY id DESC L
             width: 30%;
             text-align: center;
         }
+
+        /* Actions section (Add Car, Add Category, Manage Cars) */
         .actions {
             display: flex;
             justify-content: space-between;
@@ -74,6 +85,8 @@ $recentCars = $conn->query("SELECT name, image_path FROM cars ORDER BY id DESC L
         .actions a:hover {
             background-color: #0056b3;
         }
+
+        /* Recent Cars section */
         .recent-cars {
             background-color: #fff;
             padding: 20px;
@@ -90,6 +103,8 @@ $recentCars = $conn->query("SELECT name, image_path FROM cars ORDER BY id DESC L
             align-items: center;
             margin-bottom: 10px;
         }
+
+        /* Welcome admin message */
         .bottom-middle {
             background-color: #fff;
             padding: 20px;
@@ -101,6 +116,7 @@ $recentCars = $conn->query("SELECT name, image_path FROM cars ORDER BY id DESC L
     </style>
 </head>
 <body>
+    <!-- Navbar section with admin options -->
     <div class="navbar">
         <div class="logo">Admin Dashboard</div>
         <div>
@@ -111,11 +127,16 @@ $recentCars = $conn->query("SELECT name, image_path FROM cars ORDER BY id DESC L
             <a href="logout.php">Logout</a>
         </div>
     </div>
+
+    <!-- Main content container -->
     <div class="container">
+        <!-- Welcome message (can be customized) -->
         <div class="welcome">
             <h1><br></h1>
             <p><br></p>
         </div>
+
+        <!-- Summary of total cars and total categories -->
         <div class="summary">
             <div>
                 <h2>Total Cars</h2>
@@ -126,11 +147,15 @@ $recentCars = $conn->query("SELECT name, image_path FROM cars ORDER BY id DESC L
                 <p><?php echo $totalCategories; ?></p>
             </div>
         </div>
+
+        <!-- Actions section with links for adding cars, adding categories, and managing cars -->
         <div class="actions">
             <a href="add_car.php">Add Car</a>
             <a href="category.php">Add Category</a>
             <a href="manage_cars.php">Manage Cars</a>
         </div>
+
+        <!-- Admin welcome message -->
         <div class="bottom-middle">
             <h2>Welcome, Admin!</h2>
             <p>Manage your car showroom efficiently from this dashboard.</p>

@@ -1,64 +1,76 @@
 <?php
+/**
+ * This script handles the user registration (sign-up) functionality for the BMW_CARS application.
+ * It includes the database connection, processes form submissions, validates user inputs,
+ * checks for existing email addresses, hashes passwords, and inserts new user records into the database.
+ */
+
 // Include the database connection file
 include('db_connect.php');
 
-// Initialize variables
+// Initialize variables to store user inputs and error messages
 $fullName = $email = $password = $confirmPassword = "";
 $fullNameErr = $emailErr = $passwordErr = $confirmPasswordErr = $generalErr = "";
 
-// Process form submission
+// Process form submission when the request method is POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Validate inputs
+    // Validate full name input
     if (empty($_POST["full_name"])) {
-        $fullNameErr = "Full Name is required";
+        $fullNameErr = "Full Name is required"; // Set error message if full name is empty
     } else {
-        $fullName = $_POST["full_name"];
+        $fullName = $_POST["full_name"]; // Sanitize and store full name input
     }
 
+    // Validate email input
     if (empty($_POST["email"])) {
-        $emailErr = "Email is required";
+        $emailErr = "Email is required"; // Set error message if email is empty
     } else {
-        $email = $_POST["email"];
-        // Check if email already exists
+        $email = $_POST["email"]; // Sanitize and store email input
+        // Check if email already exists in the database
         $sql = "SELECT id FROM users WHERE email = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $stmt->store_result();
+        $stmt->bind_param("s", $email); // Bind email parameter to the SQL statement
+        $stmt->execute(); // Execute the SQL statement
+        $stmt->store_result(); // Store the result of the query
         if ($stmt->num_rows > 0) {
-            $emailErr = "Email already exists";
+            $emailErr = "Email already exists"; // Set error message if email already exists
         }
-        $stmt->close();
+        $stmt->close(); // Close the statement
     }
 
+    // Validate password input
     if (empty($_POST["password"])) {
-        $passwordErr = "Password is required";
+        $passwordErr = "Password is required"; // Set error message if password is empty
     } else {
-        $password = $_POST["password"];
+        $password = $_POST["password"]; // Sanitize and store password input
     }
 
+    // Validate confirm password input
     if (empty($_POST["confirm_password"])) {
-        $confirmPasswordErr = "Confirm Password is required";
+        $confirmPasswordErr = "Confirm Password is required"; // Set error message if confirm password is empty
     } else {
-        $confirmPassword = $_POST["confirm_password"];
+        $confirmPassword = $_POST["confirm_password"]; // Sanitize and store confirm password input
         if ($password !== $confirmPassword) {
-            $confirmPasswordErr = "Passwords do not match";
+            $confirmPasswordErr = "Passwords do not match"; // Set error message if passwords do not match
         }
     }
 
-    // If no errors, insert into database
+    // If no validation errors, proceed to insert the new user into the database
     if (empty($fullNameErr) && empty($emailErr) && empty($passwordErr) && empty($confirmPasswordErr)) {
+        // Hash the password for secure storage
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        // Prepare SQL statement to insert new user record
         $sql = "INSERT INTO users (full_name, email, password) VALUES (?, ?, ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sss", $fullName, $email, $hashedPassword);
+        $stmt->bind_param("sss", $fullName, $email, $hashedPassword); // Bind parameters to the SQL statement
         if ($stmt->execute()) {
+            // Redirect to login page with success message if insertion is successful
             header("Location: login.php?message=Account created successfully. Please log in.");
             exit();
         } else {
-            $generalErr = "Error: " . $stmt->error;
+            $generalErr = "Error: " . $stmt->error; // Set general error message if insertion fails
         }
-        $stmt->close();
+        $stmt->close(); // Close the statement
     }
 }
 ?>
@@ -70,6 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up</title>
     <style>
+        /* Basic styling for the sign-up page */
         body {
             display: flex;
             justify-content: center;

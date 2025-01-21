@@ -2,16 +2,19 @@
 // Include the database connection file
 include('../db_connect.php');
 
-// Initialize variables
+// Initialize error message variables
 $carErr = $categoryErr = $generalErr = "";
 
-// Process car deletion
+// Process car deletion when the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_car'])) {
+    // Get the car ID from the POST request and convert it to an integer
     $carId = intval($_POST['car_id']);
     if ($carId > 0) {
+        // Prepare the SQL statement to delete the car with the specified ID
         $sql = "DELETE FROM cars WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $carId);
+        // Execute the statement and check for errors
         if ($stmt->execute()) {
             $generalErr = "Car deleted successfully";
         } else {
@@ -23,8 +26,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_car'])) {
     }
 }
 
-// Process category deletion
+// Process category deletion when the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_category'])) {
+    // Get the category ID from the POST request and convert it to an integer
     $categoryId = intval($_POST['category_id']);
     if ($categoryId > 0) {
         // Check if there are cars in the category
@@ -36,12 +40,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_category'])) {
         $stmt->fetch();
         $stmt->close();
 
+        // If there are cars in the category, do not allow deletion
         if ($carCount > 0) {
             $categoryErr = "Cannot delete category with cars in it";
         } else {
+            // Prepare the SQL statement to delete the category with the specified ID
             $sql = "DELETE FROM categories WHERE id = ?";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("i", $categoryId);
+            // Execute the statement and check for errors
             if ($stmt->execute()) {
                 $generalErr = "Category deleted successfully";
             } else {
@@ -62,6 +69,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_category'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Remove Cars and Categories</title>
     <style>
+        /* Basic styling for the page */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -140,11 +148,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_category'])) {
             background-color: #4CAF50;
             color: white;
         }
-        
     </style>
 </head>
 <body>
-<div class="navbar">
+    <!-- Navigation bar -->
+    <div class="navbar">
         <a href="dashboard.php">Dashboard</a>
         <a href="add_car.php">Add Car</a>
         <a href="category.php">Add Category</a>
@@ -153,8 +161,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_category'])) {
         <a href="manage_categories.php">Manage Categories</a>
         <a href="logout.php">Logout</a>
     </div>
+
+    <!-- Container for managing car categories -->
     <div class="container">
         <h2>Manage Car Categories</h2>
+        <!-- Display error or success messages -->
         <?php if ($categoryErr) echo '<div class="error">' . $categoryErr . '</div>'; ?>
         <?php if ($generalErr) echo '<div class="success">' . $generalErr . '</div>'; ?>
         <?php if ($carErr) echo '<div class="error">' . $carErr . '</div>'; ?>
@@ -168,6 +179,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_category'])) {
             </thead>
             <tbody>
                 <?php
+                // Fetch and display categories from the database
                 $sql = "SELECT id, name FROM categories";
                 $result = $conn->query($sql);
                 if ($result->num_rows > 0) {
@@ -191,8 +203,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_category'])) {
         </table>
     </div>
 
+    <!-- Container for managing cars -->
     <div class="container">
         <h2>Manage Cars</h2>
+        <!-- Display error or success messages -->
         <?php if ($carErr) echo '<div class="error">' . $carErr . '</div>'; ?>
         <?php if ($generalErr) echo '<div class="success">' . $generalErr . '</div>'; ?>
         <table>
@@ -206,6 +220,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_category'])) {
             </thead>
             <tbody>
                 <?php
+                // Fetch and display cars along with their categories from the database
                 $sql = "SELECT cars.id, cars.name, categories.name AS category_name FROM cars JOIN categories ON cars.category_id = categories.id";
                 $result = $conn->query($sql);
                 if ($result->num_rows > 0) {
@@ -238,6 +253,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_category'])) {
 </html>
 
 <?php
-// Close the connection after use
+// Close the database connection after use
 $conn->close();
 ?>
