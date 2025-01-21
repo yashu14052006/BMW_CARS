@@ -8,7 +8,7 @@ $totalCars = $conn->query("SELECT COUNT(*) AS total FROM cars")->fetch_assoc()['
 // Get the total number of categories from the 'categories' table
 $totalCategories = $conn->query("SELECT COUNT(*) AS total FROM categories")->fetch_assoc()['total'];
 // Fetch the latest 5 cars with their name and image path from the 'cars' table
-$recentCars = $conn->query("SELECT name, image_path FROM cars ORDER BY id DESC LIMIT 5")->fetch_all(MYSQLI_ASSOC);
+$recentCars = $conn->query("SELECT name, images FROM cars ORDER BY id DESC LIMIT 5")->fetch_all(MYSQLI_ASSOC);
 ?>
 
 <!DOCTYPE html>
