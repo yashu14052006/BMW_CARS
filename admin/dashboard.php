@@ -121,9 +121,11 @@ $recentCars = $conn->query("SELECT name, images FROM cars ORDER BY id DESC LIMIT
         <div class="logo">Admin Dashboard</div>
         <div>
             <a href="category.php">Add Category</a>
+            <a href="book_car_info.php">book car info</a>
             <a href="remove.php">Remove Car & Category</a>
             <a href="manage_cars.php">Manage Cars</a>
             <a href="manage_categories.php">Manage Categories</a>
+            <a href="manage_locations.php">manage locations</a>
             <a href="logout.php">Logout</a>
         </div>
     </div>

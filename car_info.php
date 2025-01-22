@@ -2,6 +2,34 @@
 // Include the database connection file
 include('db_connect.php');
 
+// Initialize a variable to track booking status
+$bookingSuccess = false;
+
+// Handle form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $carId = intval($_POST['car_id']);
+    $name = $_POST['name'];
+    $mobile = $_POST['mobile'];
+    $state = $_POST['state'];
+    $city = $_POST['city'];
+    $query = $_POST['query'];
+
+    // Prepare the SQL statement to insert the booking request
+    $sql = "INSERT INTO booking_requests (car_id, name, mobile, state, city, query) VALUES (?, ?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("isssss", $carId, $name, $mobile, $state, $city, $query);
+
+    // Execute the SQL statement
+    if ($stmt->execute()) {
+        $bookingSuccess = true; // Set booking success to true
+    } else {
+        echo "Error: " . $stmt->error;
+    }
+
+    // Close the prepared statement
+    $stmt->close();
+}
+
 // Fetch car details based on the provided car ID from the URL query parameter
 $carId = isset($_GET['id']) ? intval($_GET['id']) : 0; // Get the car ID from the URL, default to 0 if not set
 $sql = "SELECT * FROM car_information WHERE id = ?"; // SQL query to fetch car details
@@ -138,17 +166,64 @@ $stmt->close(); // Close the prepared statement
         <?php endif; ?>
         <div class="booking-form">
             <h3>Request for Booking</h3>
-            <form action="booking.php" method="post">
+            <form action="car_info.php?id=<?php echo $carId; ?>" method="post">
                 <input type="hidden" name="car_id" value="<?php echo htmlspecialchars($car['id']); ?>"> <!-- Hidden field to pass car ID -->
                 <input type="text" name="name" placeholder="Name" required> <!-- Input field for name -->
-                <input type="text" name="mobile" placeholder="Mobile" required> <!-- Input field for mobile number -->
+                <input type="text" name="mobile" placeholder="Mobile" required pattern="\d{10}" title="Please enter a valid 10-digit mobile number"> <!-- Input field for mobile number with validation -->
                 <select name="state" required> <!-- Dropdown for selecting state -->
                     <option value="">Select State</option>
                     <!-- Add state options here -->
+                <?php
+                $states = [
+                    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", 
+                    "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", 
+                    "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", 
+                    "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", 
+                    "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", 
+                    "Uttar Pradesh", "Uttarakhand", "West Bengal"
+                ];
+
+                foreach ($states as $state) {
+                    echo '<option value="' . htmlspecialchars($state) . '">' . htmlspecialchars($state) . '</option>';
+                }
+                ?>
                 </select>
                 <select name="city" required> <!-- Dropdown for selecting city -->
                     <option value="">Select City</option>
                     <!-- Add city options here -->
+                <option value="Ahmedabad">Ahmedabad</option>
+                <option value="Amreli">Amreli</option>
+                <option value="Anand">Anand</option>
+                <option value="Aravalli">Aravalli</option>
+                <option value="Banaskantha">Banaskantha</option>
+                <option value="Bharuch">Bharuch</option>
+                <option value="Bhavnagar">Bhavnagar</option>
+                <option value="Botad">Botad</option>
+                <option value="Chhota Udaipur">Chhota Udaipur</option>
+                <option value="Dahod">Dahod</option>
+                <option value="Dang">Dang</option>
+                <option value="Devbhoomi Dwarka">Devbhoomi Dwarka</option>
+                <option value="Gandhinagar">Gandhinagar</option>
+                <option value="Gir Somnath">Gir Somnath</option>
+                <option value="Jamnagar">Jamnagar</option>
+                <option value="Junagadh">Junagadh</option>
+                <option value="Kheda">Kheda</option>
+                <option value="Kutch">Kutch</option>
+                <option value="Mahisagar">Mahisagar</option>
+                <option value="Mehsana">Mehsana</option>
+                <option value="Morbi">Morbi</option>
+                <option value="Narmada">Narmada</option>
+                <option value="Navsari">Navsari</option>
+                <option value="Panchmahal">Panchmahal</option>
+                <option value="Patan">Patan</option>
+                <option value="Porbandar">Porbandar</option>
+                <option value="Rajkot">Rajkot</option>
+                <option value="Sabarkantha">Sabarkantha</option>
+                <option value="Surat">Surat</option>
+                <option value="Surendranagar">Surendranagar</option>
+                <option value="Tapi">Tapi</option>
+                <option value="Vadodara">Vadodara</option>
+                <option value="Valsad">Valsad</option>
                 </select>
                 <textarea name="query" placeholder="Query" required></textarea> <!-- Textarea for additional queries -->
                 <button type="submit">Request for Booking</button> <!-- Submit button for the form -->
@@ -207,6 +282,12 @@ $stmt->close(); // Close the prepared statement
             <p>Ownership Status: <?php echo isset($car['ownership_status']) ? htmlspecialchars($car['ownership_status']) : 'Not Available'; ?></p>
         </div>
     </div>
+
+    <?php if ($bookingSuccess): ?>
+    <script>
+        alert('Booking request submitted successfully!');
+    </script>
+    <?php endif; ?>
 </body>
 </html>
 

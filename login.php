@@ -9,6 +9,9 @@
 // Include the database connection file
 include('db_connect.php');
 
+// Start the session
+session_start();
+
 // Initialize variables for storing user inputs and error messages
 $email = $password = "";
 $emailErr = $passwordErr = $generalErr = "";
@@ -42,21 +45,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($stmt->num_rows > 0) {
             $stmt->bind_result($id, $hashedPassword); // Bind result variables
             $stmt->fetch(); // Fetch the result
-
-            // Verify the provided password against the stored hashed password
+            // Verify the password
             if (password_verify($password, $hashedPassword)) {
-                // If credentials are valid, redirect to the dashboard
+                // If credentials are valid, store user ID in session and redirect to the dashboard
+                $_SESSION['user_id'] = $id;
                 header("Location: index.php");
                 exit();
             } else {
                 $generalErr = "Invalid email or password"; // Set error message for invalid credentials
             }
+        }
+        if (isset($stmt)) {
+            $stmt->close(); // Close the statement
+        }
         } else {
             $generalErr = "Invalid email or password"; // Set error message if no user found
         }
-        $stmt->close(); // Close the statement
+    
     }
-}
 ?>
 
 <!DOCTYPE html>

@@ -1,4 +1,15 @@
 <?php
+
+// Start the session
+session_start();
+
+// Check if the user is not logged in
+if (!isset($_SESSION['user_id'])) {
+    // Redirect to the login page
+    header("Location: login.php");
+    exit();
+}
+
 // Include the database connection file
 include('db_connect.php');
 
@@ -71,8 +82,9 @@ mysqli_select_db($conn, 'bmw_car');
     <ul class="nav-links">
         <li><a href="#home">Home</a></li>
         <li><a href="#categories">Categories</a></li>
-        <li><a href="#cars">Contact Us</a></li>
-        <li><a href="#contact">About Us</a></li>
+        <li><a href="contact.php">Contact Us</a></li>
+        <li><a href="logout.php">logout</a></li>
+        <li><a href="about.php">About Us</a></li>
     </ul>
 </nav>
 

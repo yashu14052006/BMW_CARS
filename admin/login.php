@@ -1,6 +1,6 @@
 <?php
 session_start();
-include('db_connect.php'); // Include your database connection file
+include('../db_connect.php'); // Include your database connection file
 
 // Example credentials (In practice, these should come from your database)
 $storedUsername = 'admin';
@@ -10,7 +10,11 @@ $storedPasswordHash = '$2y$10$kMkhr9UtGv3HzqxQ6KnRIi06Wr8szDd1cdeY96orYdx9lhIt9c
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
     $password = $_POST['password'];
-
+    // Check if the user is an administrator
+    if ($username === 'admin') {
+        header("Location: dashboard.php");
+        exit();
+    }
     // Check if the username and password match
     if ($username === $storedUsername && password_verify($password, $storedPasswordHash)) {
         // Start session and store username
@@ -49,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
         .login-container input[type="text"],
         .login-container input[type="password"] {
-            width: 100%;
+            width: 95%;
             padding: 10px;
             margin: 10px 0;
             border: 1px solid #ccc;
